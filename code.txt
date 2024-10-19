@@ -1,0 +1,1343 @@
+	case 2:
+				 cout<<"USERNAME :";
+                 cin>>username;
+       	         cout<<"PASSWORD :";
+                 cin>>Password;
+				MYSQL* conn;
+                MYSQL_ROW row;
+                MYSQL_RES* res;
+                conn = mysql_init(0);
+                conn = mysql_real_connect(conn,HOST,USER,PASS,"oopproj",3306,NULL,0);
+          if(conn){
+              char username = mysql_query(conn, "SELECT *FROM customer");
+               if(!username){
+               res = mysql_store_result(conn);
+               while(row = mysql_fetch_row(res)){
+                cout << row[3] <<"\t | \t"  << endl << endl;
+             }
+        }
+    }
+				 
+                 
+				
+				break;
+
+
+
+admin code-------------------------------------------------------------------------------------
+
+		        		cout<<"USERNAME :";
+		                cin>>username;
+		       	        cout<<"PASSWORD :";
+		                cin>>Password;
+		        	    MYSQL* conn;
+		                MYSQL_ROW row;
+		                MYSQL_RES* res;
+		                conn = mysql_init(0);
+		                conn = mysql_real_connect(conn,HOST,USER,PASS,"oopproj",3306,NULL,0);
+						          if(conn){
+						              char username = mysql_query(conn, "SELECT *FROM admin");
+						               if(!username){
+						               res = mysql_store_result(conn);
+						               while(row = mysql_fetch_row(res)){
+						                cout << row[1] <<"\t | \t"  << endl << endl;
+						             }
+						break;
+			}
+				}
+
+
+code----
+#include<iostream>
+#include<mysql.h>
+#include<mysqld_error.h>
+#include<string.h>
+#include<conio.h>
+#include<cstdlib>
+#include<cstdio>
+#include<fstream>
+#include<sstream>
+#include<stdlib.h>
+
+using namespace std;
+
+// code 
+
+//
+
+char HOST[] = "localhost";
+char USER[] = "root";
+char PASS[] = "AK1656ak612004";
+
+int qstate;
+MYSQL mysql,* conn;
+MYSQL_ROW row;
+MYSQL_RES* res;
+
+class database_connection
+{	
+	public :
+		static void toconnect()
+		{
+			if(!(conn = mysql_init(0)))
+				 {
+				 	cout << "ERROR:MySQL object could not be created" << endl;
+				 }
+			 else
+		 		{
+		 			if(!mysql_real_connect(conn,HOST,USER,PASS,"oopproj",3306,NULL,0))
+			 		{
+			 		cout << "ERROR:DataBase doesn't exist" << endl;
+			 		cout << mysql_error(conn) << endl;
+					}
+					else
+					{
+						cout << "database connected to mysql : "<< endl;	
+					}
+				}	
+		}	
+};
+
+class signUp{
+	public :
+    char name[50], userName[50], password[20], emailID[30], AorC;
+    long long int mobileNo;
+
+    void getSignUpData(){
+        cout << "Hii there!! " << endl;
+
+        cout << "Enter your name : \n";
+        cin >> name ;
+    
+        try{
+            cout << "Enter your mobile number : \n";
+            cin >> mobileNo; 
+            
+            if(mobileNo < 1000000000 || mobileNo > 9999999999)
+            throw mobileNo;
+
+            cout << "Enter a username : \n";
+            cin >> userName;
+               
+            cout << "Enter the password (Remember this password) : \n";
+            cin >> password;
+            
+            cout << "Enter your Email ID : \n";
+            cin >> emailID;
+
+            cout << "Would you like to sell properties ( Enter Y/N ): \n";
+            cin >>  AorC;
+
+            string sentence_aux ;
+            char* consult;
+			char* sentence;
+			int nQueryState = 0;
+			
+            switch(AorC)
+            {
+            	case 'Y':
+            		
+					sentence_aux="INSERT INTO admin(adminName,adminPhNo,adminUserName,adminPassword,adminEmailId) VALUES('%s','%llu','%s','%s','%s')";
+            		sentence=new char[sentence_aux.length()+1];
+					strcpy(sentence,sentence_aux.c_str());
+					
+					
+					consult=new char[strlen(sentence)+strlen(name)+sizeof(long long int)+strlen(userName)+strlen(password)+strlen(emailID)];
+					sprintf(consult,sentence,name,mobileNo,userName,password,emailID);            		
+            		
+					cout << "Data added successfully"<< endl;
+
+					if(mysql_ping(conn)){
+						cout<<"error:impossible to connect"<<endl;
+						cout<<mysql_error(conn)<<endl;
+					}
+					if(mysql_query(conn,consult)){
+						cout<<"error:"<<mysql_error(conn)<<endl;
+						rewind(stdin);
+						getchar();
+					}
+					else{
+						cout<<"Signed Up as ADMIN"<<endl;
+					}
+					
+					break;
+
+            		
+	            case 'N':
+					sentence_aux="INSERT INTO customer(Name,Ph_No,userName,password,emailId) VALUES('%s','%llu','%s','%s','%s')";
+            		sentence=new char[sentence_aux.length()+1];
+					strcpy(sentence,sentence_aux.c_str());
+					
+					
+					consult=new char[strlen(sentence)+strlen(name)+sizeof(long long int)+strlen(userName)+strlen(password)+strlen(emailID)];
+					sprintf(consult,sentence,name,mobileNo,userName,password,emailID);            		
+
+					if(mysql_ping(conn)){
+						cout<<"error:impossible to connect"<<endl;
+						cout<<mysql_error(conn)<<endl;
+					}
+					if(mysql_query(conn,consult)){
+						cout<<"error:"<<mysql_error(conn)<<endl;
+						rewind(stdin);
+						getchar();
+					}
+					else{
+						cout<<"Signed Up as a CUSTOMER"<<endl;
+					} 
+	            	break;
+	            	
+	            default:
+	            		cout << "Give an appropriate Y/N input" << endl;
+			}
+        }
+
+        catch(long long int num)
+        {
+            cout << "The mobile number that you have entered " << num << " is invalid. Kindly check it again. \n";
+        }
+    }
+};
+
+class signin{
+	public:
+		char username[50],Password[50],adminUserName[50],adminPassword[20],userName[400],password[60];
+		int choice ;
+		
+		void getSigninData()
+		{
+		cout<<"please enter the following details"<<endl;
+       
+        cout<<"Are u a admin or customer(Enter A/C):\n";
+        cout<<"1-> Admin , 2->Customer" <<endl ;
+        cin>>choice;
+        string check;
+        switch(choice){
+        
+        		case 2:
+        			cout<<"USERNAME :";
+                    cin>>username;
+      	           	cout<<"PASSWORD :";
+                    cin>>Password;
+				 MYSQL* conn;
+                 MYSQL_RES* res;
+                 conn = mysql_init(0);
+                conn = mysql_real_connect(conn,HOST,USER,PASS,"oopproj",3306,NULL,0);
+//                static bool check(char username[50],char Password[50])
+//				 
+//				 
+//			     {
+//				 	try{
+//    	      	 cout<<"USERNAME :";
+//                 cin>>username;
+//       	         cout<<"PASSWORD :";
+//                 cin>>Password;
+//                 res = selection.getData("select * from customer where username = '"userName"' and Password = '"password"'");
+//                 throw !res;
+//             }
+//             catch(...) {
+//             	cout<<"incorrecct"<<endl;
+//			 }
+//             }   	//MYSQL_RES* res;
+//              //  conn = mysql_init(0);
+//               // conn = mysql_real_connect(conn,HOST,USER,PASS,"oopproj",3306,NULL,0);
+//   				while(res.next()){
+//            		if(res.getString(7).equals("true"))
+//            		{
+//                		return true;
+//            		}
+//            		else {
+//               				 return false;
+//            			}
+//        }
+//    
+//     return false;
+//    }
+//    break;
+    
+//				MYSQL* conn;
+//                MYSQL_ROW row;
+//                MYSQL_RES* res;
+//                conn = mysql_init(0);
+//                conn = mysql_real_connect(conn,HOST,USER,PASS,"oopproj",3306,NULL,0);
+         if(conn){
+              char username = mysql_query(conn, "SELECT *FROM customer where username='userName' and Password='password'");
+              
+               if(!username){
+               res = mysql_store_result(conn);
+              while(row = mysql_fetch_row(res)){
+                cout << row[0] <<"\t | \t"  << row[1]<<"/t|\t"<<row[2]<<"/t|\t"<<row[3]<<endl << endl;
+             }
+        }
+};
+
+class checkCredentials
+{
+    public:
+    char checkUser[50];
+    char checkPass[20];
+    int checkdata()
+    {
+        cout << "Hii welcome again !! " << endl;
+        cout << "Enter your username : \n";
+        cin >> checkUser;
+
+        cout << "Enter the password :\n";
+        cin >> checkPass;
+        
+        string sentence_aux1 ;
+		sentence_aux1="SELECT * FROM customer";
+		cout << sentence_aux1;
+		
+//		if(sentence_aux1)
+//		{
+//			cout << "success\n";
+//			
+//		}
+//		else 
+//		cout <<"failure\n";
+//        /*if(signUp :: userName==checkUser && checkPass==password)
+//        return 0;
+//        else exit();
+//        */  
+		return 0;    
+    }
+};
+
+int main()
+{    //
+    system("COLOR 0A");
+        int i ; 
+	    cout << "\t \t \t 1-> Property Managament System " << endl 
+	  	<< "\t \t \t 2->Event Managament System " ;
+	  	cout<<"\n \t \t enter ur choice: ";
+	  	cin >> i ;
+	  	
+	  	if(i ==2 ){
+	getch();
+	system("cls");
+	system("COLOR 0E");
+	
+	cout<<"\n \n \n \n \n \n \n \n "<< endl;
+	cout << "\t \t \t Welcome to Event  Managament \t \t \t" ;
+	
+	
+	cout<<"\n \n \n \n \n \n \n \n \n \n \n \n	 \n \n \n \n  " <<endl; 
+	cout<<"Enter any key to continue................................"<<endl;
+	
+	
+	
+	getch();
+	system("cls");
+		system("COLOR 0A");
+        int choice;
+        cout<<"*************************\n\n\n";
+        cout<<"                      Welcome to login page                               \n\n";
+        cout<<"*******        MENU        ***********\n\n";
+  }
+  if(i == 1 ){
+	
+	getch();
+	system("cls");
+	
+	system("COLOR 0E");
+	
+	cout<<"\n \n \n \n \n \n \n \n "<< endl;
+	cout << "\t \t \t Welcome to property Managament \t \t \t" ;
+	
+	
+	cout<<"\n \n \n \n \n \n \n \n \n \n \n \n	 \n \n \n \n  " <<endl; 
+	
+	cout<<"Enter any key to continue................................"<<endl;
+	
+	getch();
+	system("cls");
+		system("COLOR 0A");
+        int choice;
+        cout<<"*************************\n\n\n";
+        cout<<"                      Welcome to login page                               \n\n";
+        cout<<"*******        MENU        ***********\n\n";
+        cout<<"1.SIGN UP"<<endl;
+        cout<<"2.SIGN IN (ALREADY EXISTED ACCOUNT)"<<endl;
+        cout<<"3.PASSWORD"<<endl;
+        cout<<"4.Exit"<<endl;
+        cout<<"\nEnter your choice :";
+        cin>>choice;
+        cout<<endl;
+        char exitentry;
+
+	bool signUpFlag = true;
+	int signUpChoice;
+	
+	database_connection::toconnect();   // static void can be called without using object ..
+		  
+	
+	while(signUpFlag)
+	{
+		
+		
+	  switch(choice)
+        {
+                case 1:
+                        signUp obj;
+		                obj.getSignUpData();
+		                break;
+                case 2:
+                	    signin obj1;
+                        obj1.getSigninData();
+                        break;
+               
+               
+                default:
+                        system("cls");
+                        cout<<"You've made a mistake in registering  , give it a try again\n"<<endl; 
+                        main();
+        
+   
+    }
+	
+		cout <<"Want to sign up again ? " << endl;
+		cout << "1.YES \n2.NO\n" ;
+		cin >> signUpChoice;
+		
+		switch(signUpChoice)
+		{
+			case 2:
+				signUpFlag = false;	
+		}
+	}
+
+//	checkCredentials obj2;
+//	obj2.checkdata();
+	
+	
+}
+return 0;
+}
+
+///////////////////////////
+#include<iostream>
+#include<mysql.h>
+#include<mysqld_error.h>
+#include<string.h>
+#include<conio.h>
+#include<cstdlib>
+#include<cstdio>
+#include<sstream>
+
+using namespace std;
+
+
+char HOST[] = "localhost";
+char USER[] = "root";
+char PASS[] = "AK1656ak612004";
+
+int qstate;
+MYSQL mysql,* conn;
+MYSQL_ROW row;
+MYSQL_RES* res;
+
+
+
+class database_connection
+{	
+	public :
+		static void toconnect()
+		{
+			if(!(conn = mysql_init(0)))
+				 {
+				 	cout << "ERROR:MySQL object could not be created" << endl;
+				 }
+			 else
+		 		{
+		 			if(!mysql_real_connect(conn,HOST,USER,PASS,"event",3306,NULL,0))
+			 		{
+			 		cout << "ERROR:DataBase doesn't exist" << endl;
+			 		cout << mysql_error(conn) << endl;
+					}
+					else
+					{
+						cout << "database connected to mysql :) "<< endl;	
+					}
+				}	
+		}	
+};
+
+void checkError()
+{
+	if(mysql_ping(conn))
+	{
+		cout<<"error:impossible to connect"<<endl;
+		cout<<mysql_error(conn)<<endl;
+	}
+}
+
+class signUp{
+	public :
+    char name[50], userName[50], password[20], emailID[30];
+    int AorC;
+    long long int mobileNo;
+
+    char getSignUpData(){
+        cout << "Hii there!! " << endl;
+
+        cout << "Enter your name : \n";
+        cin >> name ;
+    
+        try{
+            cout << "Enter your mobile number : \n";
+            cin >> mobileNo; 
+            
+            if(mobileNo < 1000000000 || mobileNo > 9999999999)
+            throw mobileNo;
+
+            cout << "Enter a username : \n";
+            cin >> userName;
+               
+            cout << "Enter the password (Remember this password) : \n";
+            cin >> password;
+            
+            cout << "Enter your Email ID : \n";
+            cin >> emailID;
+
+            cout << "1->Would you like to book an event/ 2->would u like to organise an event: \n";
+            cin >>  AorC;
+
+            string sentence_aux ;
+            char* consult;
+			char* sentence;
+			int nQueryState = 0;
+			
+            switch(AorC)
+            {
+            	
+            	case 2:
+            		
+					sentence_aux="INSERT INTO organisers(organiserName,organiserPhNo,organiserUserName,organiserPassword,organiserEmailId) VALUES('%s','%llu','%s','%s','%s')";
+            		sentence=new char[sentence_aux.length()+1];
+					strcpy(sentence,sentence_aux.c_str());
+					
+					consult=new char[strlen(sentence)+strlen(name)+sizeof(long long int)+strlen(userName)+strlen(password)+strlen(emailID)];
+					sprintf(consult,sentence,name,mobileNo,userName,password,emailID);            		
+            		
+					cout << "Data added successfully"<< endl;
+
+					checkError();
+					
+					if(mysql_query(conn,consult)){
+						cout<<"error:"<<mysql_error(conn)<<endl;
+						rewind(stdin);
+						getchar();
+					}
+					else{
+						cout<<"Signed Up as Organiser"<<endl;
+					}
+					
+					break;
+
+            		
+	            case 1:
+					sentence_aux="INSERT INTO customer(Name,Ph_No,userName,password,emailId) VALUES('%s','%llu','%s','%s','%s')";
+            		sentence=new char[sentence_aux.length()+1];
+					strcpy(sentence,sentence_aux.c_str());
+					
+					
+					consult=new char[strlen(sentence)+strlen(name)+sizeof(long long int)+strlen(userName)+strlen(password)+strlen(emailID)];
+					sprintf(consult,sentence,name,mobileNo,userName,password,emailID);            		
+
+					if(mysql_query(conn,consult)){
+						cout<<"error:"<<mysql_error(conn)<<endl;
+						rewind(stdin);
+						getchar();
+					}
+					else{
+						cout<<"Signed Up as a CUSTOMER"<<endl;
+					} 
+	            	break;
+	            	
+	            default:
+	            		cout << "Give an appropriate 1/2 input" << endl;
+			}
+        }
+
+        catch(long long int num)
+        {
+            cout << "The mobile number that you have entered " << num << " is invalid. Kindly check it again. \n";
+        }
+        
+        return AorC;
+    }
+    
+};
+
+class checkCCredentials
+{
+    public:
+    string userCheck;
+    string passCheck;
+    int checkData()
+    {
+        cout << "Hii welcome again !! " << endl;
+        cout << "Enter your username : \n";
+        cin >> userCheck;
+
+        cout << "Enter the password :\n";
+        cin >> passCheck;
+        
+        string sentence_aux1 = "SELECT password FROM customer WHERE userName = '" +userCheck + "' AND password= '" +passCheck + "'";
+        
+	    const char* qn = sentence_aux1.c_str();
+	    qstate = mysql_query(conn, qn);	
+
+	   // cout << qstate << "\n";
+	  
+		if(!qstate)
+		{	
+			res = mysql_store_result(conn);	
+			  int c; 			
+	        while(row = mysql_fetch_row(res))
+	        {
+	        	cout << "The password you entered " << row[0] << "does match ." << endl;
+				return 1;	        	
+	    	}
+	    	
+	      		
+	      		
+		  }
+		                                 
+		if(qstate)
+		{
+			cout << "Query Execution Problem : " << mysql_errno(conn) << endl;
+		}
+		
+		return 0;
+	}
+};
+
+class checkOCredentials
+{
+    public:
+    string checkUser;
+    string checkPass;
+    int checkData()
+    {
+        cout << "Hii welcome again !! " << endl;
+        cout << "Enter your username : \n";
+        cin >> checkUser;
+
+        cout << "Enter the password :\n";
+        cin >> checkPass;
+        
+        string sentence_aux1 = "SELECT organiserPassword FROM organiser WHERE organiserUserName = '" +checkUser + "' AND organiserPassword= '" +checkPass + "'";
+        
+	    const char* qn = sentence_aux1.c_str();
+	    qstate = mysql_query(conn, qn);	
+
+	   // cout << qstate << "\n";
+		if(!qstate)
+		{	
+			res = mysql_store_result(conn);	
+			    			
+	        while(row = mysql_fetch_row(res))
+	        {
+	        	cout << "The password you entered " << row[0] << "does match ." << endl;
+				return 1;	        	
+	    	}
+	    	
+		}                                 
+		if(qstate)
+		{
+			cout << "Query Execution Problem : " << mysql_errno(conn) << endl;
+		}
+		
+		return 0;
+	}
+};
+
+
+
+class event
+{
+	public:
+	char organiserName[50],event_no[40],price[10],location[100],exp[30],organiserPhNo[10],organiserEmailId[50];
+	//checkcredentials;
+	void geteventData()
+	{
+		cout << "Enter the name of the organiser : \n";
+		cin >> organiserName;
+		
+		cout<<"Enter phone number:\n";
+		cin>>organiserPhNo;
+		
+		cout<<"Enter emailid:\n ";
+		cin>>organiserEmailId;
+		
+	
+		cout << "Enter the no. of events you organised: ";
+		
+		cin >> event_no;
+		
+		cout << "Enter the starting rate of your preference to any event : \n";
+		cin >> price;
+		 
+		cout << "Enter your address: \n";
+		cin >> location;
+		
+		cout << "How much experience you have in this sector: \n";
+		cin >> exp;
+		
+		
+		
+		
+		string sentence_aux ;
+	    char* consult;
+		char* sentence;
+		int nQueryState = 0;
+		
+		sentence_aux="INSERT INTO property(organiserName,organiserPhNo,organiserEmailId,event_no,price,location,exp) VALUES('%s','%s','%s','%s','%s','%s','%s')";
+            		sentence=new char[sentence_aux.length()+1];
+					strcpy(sentence,sentence_aux.c_str());
+					
+					
+					consult=new char[strlen(sentence)+strlen(organiserName)+strlen(organiserPhNo)+strlen(organiserEmailId)+strlen(event_no)+strlen(price)+strlen(location)+strlen(exp)];
+					sprintf(consult,sentence,organiserName,organiserPhNo,organiserEmailId,event_no,price,location,exp);            		
+					cout << "Data added successfully"<< endl;
+
+					checkError();
+					
+					if(mysql_query(conn,consult)){
+						cout<<"error:"<<mysql_error(conn)<<endl;
+//						rewind(stdin);
+//						getchar();
+					}
+					else
+					{
+						cout<<"event data added under the name of " << organiserName <<endl;
+					}		
+	}
+};
+
+class signin:public event,public checkCCredentials
+{
+	public :
+		int qstate;
+		string sentence_aux2 = "SELECT * FROM event";
+        
+		    const char* qn1 = sentence_aux2.c_str();
+		    qstate = mysql_query(conn, qn1);	
+	
+		   // cout << qstate << "\n";
+			if(!qstate)
+			{    
+			    int searchChoice;
+		        res= mysql_store_result(conn); 
+				cout<<"1->want to book the event /2->want to see your booked event"<<endl;
+	    	    cin>>searchChoice;
+	           			 switch(searchChoice){
+	      	                        case 1:	Bookevent();		    			
+		                             break;
+		                            case 2: search_event();
+		                             break;
+			if(qstate)
+			{
+				cout << "Query Execution Problem : " << mysql_errno(conn) << endl;
+			}
+				cout << "------------------------------------------------------------------------------------------------------------------------\n";
+		}
+		
+	    void search_event()
+		{
+			int search_name;
+			cout << "Enter the name to search : " << endl;
+			cin >> search_name;
+			string searchLoc = "SELECT * FROM event WHERE search_name = '" +name+ "'";
+			const char* searchnameArray = searchname.c_str();
+			qstate = mysql_query(conn,searchnameArray );	
+
+		    cout << qstate << "\n";
+			if(!qstate)
+			{	
+				res = mysql_store_result(conn);	
+				cout << "-----------------------------------------------------------------------------------------------------------------------\n"; 
+		        printf("| %-20s| %-15s| %-17s| %-25s| %-15s| %-15s| %-20s|\n", "NAME" ,"EVENT TYPE" ,"COST FINALISED", "VENUE", "DATE", "TIMINGS","ORGANISER NAME");
+			   	cout << "-----------------------------------------------------------------------------------------------------------------------\n"; 		
+		        while(row = mysql_fetch_row(res))
+		        {
+		        	printf("| %-20s| %-15s| %-17s| %-25s| %-15s| %-15s|\n %-20s|\n", row[0], row[1], row[2], row[3], row[4], row[5],row[6]);		        	
+		    	}
+		    	
+			}                                 
+			if(qstate)
+			{
+				cout << "Query Execution Problem : " << mysql_errno(conn) << endl;
+			}
+			cout << "-----------------------------------------------------------------------------------------------------------------------\n"; 
+			
+		}
+		
+		void Bookevent(){
+			cout<<"ok";
+		}
+//			string sentence_aux2 = "SELECT * FROM event";
+//        
+//		    const char* qn1 = sentence_aux2.c_str();
+//		    qstate = mysql_query(conn, qn1);	
+//	
+		   // cout << qstate << "\n";
+//			if(!qstate)
+//			{    
+//			    int searchChoice;
+//		        res= mysql_store_result(conn); 
+//				cout<<"1->want to book the event /2->want to see your booked event"<<endl;
+//	    	    cin>>searchChoice;
+//	           			 switch(searchChoice){
+//	      	                        case 1:	Bookevent();		    			
+//		                             break;
+//		                            case 2: search_event();
+//		                             break;
+//			if(qstate)
+//			{
+//				cout << "Query Execution Problem : " << mysql_errno(conn) << endl;
+//			}
+//				cout << "------------------------------------------------------------------------------------------------------------------------\n";
+//		}
+		
+	/*	void book_event(){
+			cout<<"enter your name:"<<endl;
+			cin>>name;
+			cout<<"enter the event type:\n";
+			cin>>event_type;
+			conn = mysql_real_connect(conn,HOST,USER,PASS,"event",3306,NULL,0);
+         if(conn){
+              char username = mysql_query(conn, "SELECT *FROM organi ");
+              
+			const char* printorganiserstable="SELECT * FROM organiser";
+		}
+		
+		*/	
+		
+	/*	void search_event()
+		{
+			int search_name;
+			cout << "Enter the name to search : " << endl;
+			cin >> search_name;
+			string searchLoc = "SELECT * FROM event WHERE search_name = '" +name+ "'";
+			const char* searchnameArray = searchname.c_str();
+			qstate = mysql_query(conn,searchnameArray );	
+
+		    cout << qstate << "\n";
+			if(!qstate)
+			{	
+				res = mysql_store_result(conn);	
+				cout << "-----------------------------------------------------------------------------------------------------------------------\n"; 
+		        printf("| %-20s| %-15s| %-17s| %-25s| %-15s| %-15s| %-20s|\n", "NAME" ,"EVENT TYPE" ,"COST FINALISED", "VENUE", "DATE", "TIMINGS","ORGANISER NAME");
+			   	cout << "-----------------------------------------------------------------------------------------------------------------------\n"; 		
+		        while(row = mysql_fetch_row(res))
+		        {
+		        	printf("| %-20s| %-15s| %-17s| %-25s| %-15s| %-15s|\n %-20s|\n", row[0], row[1], row[2], row[3], row[4], row[5],row[6]);		        	
+		    	}
+		    	
+			}                                 
+			if(qstate)
+			{
+				cout << "Query Execution Problem : " << mysql_errno(conn) << endl;
+			}
+			cout << "-----------------------------------------------------------------------------------------------------------------------\n"; 
+			
+		}
+}*/
+
+}
+};
+
+int main()
+{
+	
+	system("cls");
+	
+	system("COLOR 0E");
+	
+	cout<<"\n \n \n \n \n \n \n \n "<< endl;
+	cout << "\t \t \t Welcome to Event Managament \t \t \t" ;
+	
+	
+	cout<<"\n \n \n \n \n \n \n \n \n \n \n \n	 \n \n \n \n  " <<endl; 
+	
+	cout<<"Enter any key to continue................................"<<endl;
+	
+	getch();
+	system("cls");
+		system("COLOR 0A");
+        int choice;
+        cout<<"*************************\n\n\n";
+        cout<<"                      Welcome to login page                               \n\n";
+        cout<<"*******        MENU        ***********\n\n";
+        cout<<"1.USER SIGN IN (ALREADY EXISTED ACCOUNT)"<<endl;
+        cout<<"2.SIGN UP(CREATE ACCOUNT)"<<endl;
+        cout<<"3.FORGOT PASSWORD (or) USERNAME"<<endl;
+        cout<<"4.Exit"<<endl;
+        cout<<"\nEnter your choice :";
+        cin>>choice;
+        cout<<endl;
+        switch(choice)
+        {
+                case 1:
+                        checkData();
+                        break;
+                case 2:
+                        getSignUpData();
+                        break;
+                
+                default:
+                        system("cls");
+                        cout<<"You've made a mistake in registering  , give it a try again\n"<<endl; 
+                        main();
+
+}
+
+	char exitentry;
+	char aorc;
+
+	bool signUpFlag = true;
+	int signUpChoice,adminChoice;
+	
+	database_connection::toconnect();   // static void can be called without using object ..
+		  
+	
+//	while(signUpFlag)
+//	{
+
+
+//		signUp obj;
+//		aorc=obj.getSignUpData();
+
+
+//	if(aorc='Y')
+//	{
+//		while(adminChoice)
+//		{	
+//			property obj1;
+//			obj1.getPropertyData();
+//			
+//			cout <<"Want to sell another property ? " << endl;
+//			cout << "1.YES \n0.NO\n" ;
+//			cin >> adminChoice;
+//		}
+//	}
+//
+
+	
+	signin obj2;
+	obj2.checkData();
+	obj2.searchProp();
+
+	return 0;
+}
+
+///
+#include<iostream>
+#include<mysql.h>
+#include<mysqld_error.h>
+#include<string.h>
+#include<conio.h>
+#include<cstdlib>
+#include<cstdio>
+#include<sstream>
+
+using namespace std;
+
+
+char HOST[] = "localhost";
+char USER[] = "root";
+char PASS[] = "AK1656ak612004";
+
+int qstate;
+MYSQL mysql,* conn;
+MYSQL_ROW row;
+MYSQL_RES* res;
+
+class database_connection
+{	
+	public :
+		static void toconnect()
+		{
+			if(!(conn = mysql_init(0)))
+				 {
+				 	cout << "ERROR:MySQL object could not be created" << endl;
+				 }
+			 else
+		 		{
+		 			if(!mysql_real_connect(conn,HOST,USER,PASS,"oopproj2",3306,NULL,0))
+			 		{
+			 		cout << "ERROR:DataBase doesn't exist" << endl;
+			 		cout << mysql_error(conn) << endl;
+					}
+					else
+					{
+						cout << "database connected to mysql :) "<< endl;	
+					}
+				}	
+		}	
+};
+
+void checkError()
+{
+	if(mysql_ping(conn))
+	{
+		cout<<"error:impossible to connect"<<endl;
+		cout<<mysql_error(conn)<<endl;
+	}
+}
+
+class signUp{
+	public :
+    char name[50], userName[50], emailID[30],password[50];
+    int AorC;
+   int mobileNo;
+    char getSignUpData(){
+        cout << "Hii there!! " << endl;
+
+        cout << "Enter your name : \n";
+        cin >> name ;
+    
+        try{
+            cout << "Enter your mobile number : \n";
+            cin >> mobileNo; 
+            
+            if(mobileNo < 1000000000 || mobileNo > 9999999999)
+            throw mobileNo;
+
+            cout << "Enter a username : \n";
+            cin >> userName;
+               
+            cout << "Enter the password (Remember this password) : \n";
+            cin >> password;
+            
+            cout << "Enter your Email ID : \n";
+            cin >> emailID;
+
+            cout << "1->Are u a customer/ 2->Want to be a organiser: \n";
+            cin >>  AorC;
+
+            string sentence_aux ;
+            char* consult;
+			char* sentence;
+			int nQueryState = 0;
+			
+            switch(AorC)
+            {
+            	
+            	case 2:
+            		
+					sentence_aux="INSERT INTO organiser(org_Name,org_Ph_No,org_EmailId,No_of_events,Range_of_cost,Location,Experience_in_this_sector,USERNAME,PASSWORD) VALUES('%s','%d','%s','%d','%d','%s','%d','%s','%s')";
+            		sentence=new char[sentence_aux.length()+1];
+					strcpy(sentence,sentence_aux.c_str());
+					
+					consult=new char[strlen(sentence)+strlen(name)+sizeof(long long int)+strlen(userName)+strlen(password)+strlen(emailID)];
+					sprintf(consult,sentence,name,mobileNo,userName,password,emailID);
+					
+					cout << "Data added successfully"<< endl;
+
+					checkError();
+					
+					if(mysql_query(conn,consult)){
+						cout<<"error:"<<mysql_error(conn)<<endl;
+						rewind(stdin);
+						getchar();
+					}
+					else{
+						cout<<"Signed Up as Organiser"<<endl;
+					}
+					
+					break;
+
+            		
+	            case 1:
+					sentence_aux="INSERT INTO customer(NAME,Ph_No,User_Name,Password,EmailId) VALUES('%s','%llu','%s','%s','%s')";
+            		sentence=new char[sentence_aux.length()+1];
+					strcpy(sentence,sentence_aux.c_str());
+					
+					
+					consult=new char[strlen(sentence)+strlen(name)+sizeof(long long int)+strlen(userName)+strlen(password)+strlen(emailID)];
+					sprintf(consult,sentence,name,mobileNo,userName,password,emailID);           		
+
+					if(mysql_query(conn,consult)){
+						cout<<"error:"<<mysql_error(conn)<<endl;
+						rewind(stdin);
+						getchar();
+					}
+					else{
+						cout<<"Signed Up as a CUSTOMER"<<endl;
+					} 
+	            	break;
+	            	
+	            default:
+	            		cout << "Give an appropriate 1/2 input" << endl;
+			}
+        }
+
+        catch(long long int num)
+        {
+            cout << "The mobile number that you have entered " << num << " is invalid. Kindly check it again. \n";
+        }
+        
+      //  return AorC;
+    }
+    
+};
+
+class checkCCredentials
+{
+    public:
+    string userCheck;
+    string passCheck;
+    int checkData1()
+    {
+        cout << "Hii welcome again !! " << endl;
+        cout << "Enter your username : \n";
+        cin >> userCheck;
+
+        cout << "Enter the password :\n";
+        cin >> passCheck;
+        
+        string sentence_aux1 = "SELECT password FROM customer WHERE userName = '" +userCheck + "' AND password= '" +passCheck + "'";
+        
+	    const char* qn = sentence_aux1.c_str();
+	    qstate = mysql_query(conn, qn);	
+
+	   // cout << qstate << "\n";
+	  
+		if(!qstate)
+		{	
+			res = mysql_store_result(conn);	
+			  int c; 			
+	        while(row = mysql_fetch_row(res))
+	        {
+	        	cout << "The password you entered " << row[0] << "does match ." << endl;
+				return 1;	        	
+	    	}
+	    		
+		  }
+		                                 
+		if(qstate)
+		{
+			cout << "Query Execution Problem : " << mysql_errno(conn) << endl;
+		}
+		
+		return 0;
+	}
+};
+
+
+class checkOCredentials
+{
+    public:
+    string checkUser;
+    string checkPass;
+    int checkData2()
+    {
+        cout << "Hii welcome again !! " << endl;
+        cout << "Enter your username : \n";
+        cin >> checkUser;
+
+        cout << "Enter the password :\n";
+        cin >> checkPass;
+        
+        string sentence_aux1 = "SELECT organiserPassword FROM organiser WHERE organiserUserName = '" +checkUser + "' AND organiserPassword= '" +checkPass + "'";
+        
+	    const char* qn = sentence_aux1.c_str();
+	    qstate = mysql_query(conn, qn);	
+
+	   // cout << qstate << "\n";
+		if(!qstate)
+		{	
+			res = mysql_store_result(conn);	
+			    			
+	        while(row = mysql_fetch_row(res))
+	        {
+	        	cout << "The password you entered " << row[0] << "does match ." << endl;
+				return 1;	        	
+	    	}
+	    	
+		}                                 
+		if(qstate)
+		{
+			cout << "Query Execution Problem : " << mysql_errno(conn) << endl;
+		}
+		
+		return 0;
+	}
+};
+
+
+
+int main(){
+
+    //
+    system("COLOR 0A");
+        int i ; 
+	    cout << "\t \t \t 1-> Property Managament System " << endl 
+	  	<< "\t \t \t 2->Event Managament System " ;
+	  	cout<<"\n \t \t enter ur choice: ";
+	  	cin >> i ;
+	  	
+	  	if(i ==2 ){
+	getch();
+	system("cls");
+	system("COLOR 0E");
+	
+	cout<<"\n \n \n \n \n \n \n \n "<< endl;
+	cout << "\t \t \t Welcome to Event  Managament \t \t \t" ;
+	
+	
+	cout<<"\n \n \n \n \n \n \n \n \n \n \n \n	 \n \n \n \n  " <<endl; 
+	cout<<"Enter any key to continue................................"<<endl;
+	
+	
+	
+     getch();
+	system("cls");
+		system("COLOR 0A");
+        int choice;
+        cout<<"*********\n\n\n";
+        cout<<"                      Welcome to login page                               \n\n";
+        cout<<"***        MENU        *****\n\n";
+        cout<<"1.SIGN UP"<<endl;
+        cout<<"2.SIGN IN (ALREADY EXISTED ACCOUNT)"<<endl;
+        cout<<"3.PASSWORD"<<endl;
+        cout<<"4.Exit"<<endl;
+        cout<<"\nEnter your choice :";
+        cin>>choice;
+        cout<<endl;
+        char exitentry;
+
+	bool signUpFlag = true;
+	int signUpChoice;
+	
+	database_connection::toconnect();   // static void can be called without using object ..
+		  
+	
+	while(signUpFlag)
+	{
+		
+		
+	  switch(choice)
+        {
+                case 1:
+                        signUp obj;
+		                obj.getSignUpData();
+		                break;
+                case 2: 
+                        int chi;
+                        cout<<"Organiser->1/customer->2"<<endl;
+                        cin>>chi;
+                        if(chi==1){
+						
+                	    checkOCredentials obj1;
+                        obj1.checkData2();
+                        }
+                        else{
+                        checkCCredentials obj2;
+                        obj2.checkData1();	
+						}
+                        break;
+               
+               
+               
+                        system("cls");
+                        cout<<"You've made a mistake in registering  , give it a try again\n"<<endl; 
+                        
+        
+   
+    }
+	
+	    cout <<"Want to sign in again ? " << endl;
+		cout << "1.YES \n2.NO\n" ;
+		cin >> signUpChoice;
+		
+		switch(signUpChoice)
+		{
+			case 2:
+				signUpFlag = false;	
+		}
+	}
+
+}
+  
+  if(i == 1 ){
+	
+	getch();
+	system("cls");
+	
+	system("COLOR 0E");
+	
+	cout<<"\n \n \n \n \n \n \n \n "<< endl;
+	cout << "\t \t \t Welcome to property Managament \t \t \t" ;
+	
+	
+	cout<<"\n \n \n \n \n \n \n \n \n \n \n \n	 \n \n \n \n  " <<endl; 
+	
+	cout<<"Enter any key to continue................................"<<endl;
+	
+	getch();
+	system("cls");
+		system("COLOR 0A");
+        int choice;
+        cout<<"*********\n\n\n";
+        cout<<"                      Welcome to login page                               \n\n";
+        cout<<"***        MENU        *****\n\n";
+//        cout<<"1.SIGN UP"<<endl;
+//        cout<<"2.SIGN IN (ALREADY EXISTED ACCOUNT)"<<endl;
+//        cout<<"3.PASSWORD"<<endl;
+//        cout<<"4.Exit"<<endl;
+//        cout<<"\nEnter your choice :";
+//        cin>>choice;
+//        cout<<endl;
+//        char exitentry;
+//
+//	bool signUpFlag = true;
+//	int signUpChoice;
+//	
+//	database_connection::toconnect();   // static void can be called without using object ..
+//		  
+//	
+//	while(signUpFlag)
+//	{
+//		
+//		
+//	  switch(choice)
+//        {
+//                case 1:
+//                        signUp obj;
+//		                obj.getSignUpData();
+//		                break;
+//                case 2:
+//                	    checkCCredentials obj1;
+//                        obj1.checkData1();
+//                        break;
+//               
+//               
+//               
+//                        system("cls");
+//                        cout<<"You've made a mistake in registering  , give it a try again\n"<<endl; 
+//                        
+//        
+//   
+//    }
+//	
+//	    cout <<"Want to sign in again ? " << endl;
+//		cout << "1.YES \n2.NO\n" ;
+//		cin >> signUpChoice;
+//		
+//		switch(signUpChoice)
+//		{
+//			case 2:
+//				signUpFlag = false;	
+//		}
+//	}
+//
+//}
+}
+}
+
+
+
